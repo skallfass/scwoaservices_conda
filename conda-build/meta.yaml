@@ -1,0 +1,47 @@
+{% set data = load_setup_py_data() %}
+
+package:
+    name: "scwoaservices"
+    version: {{ data.get('version') }}
+
+source:
+    path: ..
+
+build:
+    build: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+    preserve_egg_dir: True
+    script: python -m pip install --no-deps --ignore-installed .
+    entry_points:
+        - create_docu = scwoaservices.tools.create_docu:main
+
+requirements:
+    build:
+        - python 3.7.3
+        - pip
+        - setuptools
+    run:
+        - python 3.7.3
+        - pydantic >=0.28
+        - sanic >=19.3.1
+        - sanic-openapi >=0.5.3
+
+test:
+    imports:
+        - scwoaservices
+        - scwoaservices.decorators
+        - scwoaservices.errors
+        - scwoaservices.options
+        - scwoaservices.rules
+        - scwoaservices.tools.create_docu
+    commands:
+        - create_docu --help
+
+extra:
+    env_name: "scwoaservices"
+    dev_requirements:
+        - ipython >=7.5.0
+        - mkdocs >=1.0.4
+        - monkeytype >=19.5.0
+        - pydoc-markdown >=2.0.5
+        - pylint >=2.3.1
+        - yapf >=0.27.0
